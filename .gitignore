@@ -1,0 +1,13 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+
+# Build folders
+bin/
+obj/
+
+# Node modules (if Angular frontend exists)
+node_modules/
