@@ -1,4 +1,4 @@
-public class RegisterDTO
+﻿public class CreateClaimsOfficerDTO
 {
     public string FullName { get; set; }
     public string UserName { get; set; }
