@@ -11,12 +11,14 @@ namespace Backend.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<PolicyCategory> PolicyCategories { get; set; }
+        public DbSet<PolicySubCategory> PolicySubCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Store enum as string in database (recommended)
+            // Store enum as string in database 
             modelBuilder.Entity<User>()
                 .Property(u => u.Role)
                 .HasConversion<string>();

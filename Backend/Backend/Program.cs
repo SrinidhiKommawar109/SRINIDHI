@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
-
+using Backend.Repositories.Implementations;
 var builder = WebApplication.CreateBuilder(args);
 
 // =========================
@@ -21,6 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // SERVICE REGISTRATION
 // =========================
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPolicyCategoryRepository, PolicyCategoryRepository>();
 
 // =========================
 // JWT AUTHENTICATION
