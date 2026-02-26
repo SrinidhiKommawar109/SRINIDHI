@@ -1,0 +1,13 @@
+<h2>Register</h2>
+
+<input [(ngModel)]="email" placeholder="Email">
+<br>
+<input type="password" [(ngModel)]="password" placeholder="Password">
+<br>
+
+<select [(ngModel)]="role">
+    <option value="Customer">Customer</option>
+</select>
+
+<br>
+<button (click)="register()">Register</button>

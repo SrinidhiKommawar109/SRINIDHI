@@ -1,0 +1,41 @@
+<h2>Categories</h2>
+
+<div *ngFor="let category of categories">
+
+    <h3>{{ category.name }}</h3>
+
+    <div *ngFor="let sub of category.subCategories">
+        <p>
+            <input type="radio" name="subCategory" [value]="sub.id" [(ngModel)]="selectedSubCategoryId" />
+            {{ sub.name }}
+        </p>
+
+        <ul>
+            <li *ngFor="let plan of sub.plans">
+                {{ plan.planName }} -
+                ₹{{ plan.baseCoverageAmount }} -
+                {{ plan.coverageRate }}%
+            </li>
+        </ul>
+
+    </div>
+
+</div>
+
+<hr>
+
+<h3>Add New Plan</h3>
+
+<input type="text" placeholder="Plan Name" [(ngModel)]="newPlan.planName" />
+
+<br><br>
+
+<input type="number" placeholder="Base Coverage Amount" [(ngModel)]="newPlan.baseCoverageAmount" />
+
+<br><br>
+
+<input type="number" placeholder="Coverage Rate" [(ngModel)]="newPlan.coverageRate" />
+
+<br><br>
+
+<button (click)="savePlan()">Save Plan</button>
