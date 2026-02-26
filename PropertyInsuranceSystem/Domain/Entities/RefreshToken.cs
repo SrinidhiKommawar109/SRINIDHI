@@ -15,7 +15,7 @@ namespace Domain.Entities
 
         public bool IsRevoked { get; set; } = false;
 
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
 
         public ApplicationUser User { get; set; }
     }
