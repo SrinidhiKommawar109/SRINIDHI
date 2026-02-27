@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Enums;
 
 namespace Domain.Entities;
 
@@ -14,6 +15,9 @@ public class PropertyPlans : BaseEntity
     public decimal BasePremium { get; set; }
 
     public decimal AgentCommission { get; set; }
+
+    public PremiumFrequency Frequency { get; set; }
+
 
     // Foreign Key
     public int SubCategoryId { get; set; }

@@ -25,7 +25,13 @@ namespace Domain.Entities
         public decimal? RiskScore { get; set; }
 
         public decimal PremiumAmount { get; set; }
+        public decimal TotalPremium { get; set; }
 
+        public decimal InstallmentAmount { get; set; }
+
+        public PremiumFrequency Frequency { get; set; }
+
+        public int InstallmentCount { get; set; }
         public decimal AgentCommissionAmount { get; set; }
     }
 }

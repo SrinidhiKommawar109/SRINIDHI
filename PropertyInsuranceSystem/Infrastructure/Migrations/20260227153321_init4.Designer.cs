@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260227084019_init1")]
-    partial class init1
+    [Migration("20260227153321_init4")]
+    partial class init4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,6 +67,85 @@ namespace Infrastructure.Migrations
                             IsActive = true,
                             PasswordHash = "$2a$11$kkF9EKe7KJxAijZ374He4edBGTSujLGRA48MkMwN9g6PK77IM2H..",
                             Role = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Email = "claims@gmail.com",
+                            FullName = "Claims Officer",
+                            IsActive = true,
+                            PasswordHash = "$2a$11$kkF9EKe7KJxAijZ374He4edBGTSujLGRA48MkMwN9g6PK77IM2H..",
+                            Role = 4
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Email = "customer@gmail.com",
+                            FullName = "Customer",
+                            IsActive = true,
+                            PasswordHash = "$2a$11$kkF9EKe7KJxAijZ374He4edBGTSujLGRA48MkMwN9g6PK77IM2H..",
+                            Role = 3
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.Claim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("ClaimAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PolicyRequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PropertyAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropertyAge")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PropertyValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PolicyRequestId");
+
+                    b.ToTable("Claims");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClaimAmount = 5000m,
+                            PolicyRequestId = 1,
+                            PropertyAddress = "123 Main Street",
+                            PropertyAge = 10,
+                            PropertyValue = 1000000m,
+                            Remarks = "",
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClaimAmount = 15000m,
+                            PolicyRequestId = 2,
+                            PropertyAddress = "456 Commerce Road",
+                            PropertyAge = 5,
+                            PropertyValue = 5000000m,
+                            Remarks = "",
+                            Status = 0
                         });
                 });
 
@@ -78,14 +157,29 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("AgentCommissionAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int?>("AgentId")
                         .HasColumnType("int");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("InstallmentAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("InstallmentCount")
+                        .HasColumnType("int");
+
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("PremiumAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PropertyAddress")
                         .HasColumnType("nvarchar(max)");
@@ -102,6 +196,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("TotalPremium")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AgentId");
@@ -111,6 +208,34 @@ namespace Infrastructure.Migrations
                     b.HasIndex("PlanId");
 
                     b.ToTable("PolicyRequests");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AgentCommissionAmount = 0m,
+                            CustomerId = 3,
+                            Frequency = 0,
+                            InstallmentAmount = 0m,
+                            InstallmentCount = 0,
+                            PlanId = 1,
+                            PremiumAmount = 0m,
+                            Status = 6,
+                            TotalPremium = 0m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AgentCommissionAmount = 0m,
+                            CustomerId = 3,
+                            Frequency = 0,
+                            InstallmentAmount = 0m,
+                            InstallmentCount = 0,
+                            PlanId = 2,
+                            PremiumAmount = 0m,
+                            Status = 6,
+                            TotalPremium = 0m
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.PropertyCategory", b =>
@@ -145,11 +270,20 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("AgentCommission")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("BaseCoverageAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("BasePremium")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("CoverageRate")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
 
                     b.Property<string>("PlanName")
                         .IsRequired()
@@ -168,32 +302,44 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 1,
+                            AgentCommission = 500m,
                             BaseCoverageAmount = 1000000m,
+                            BasePremium = 5000m,
                             CoverageRate = 0.02m,
+                            Frequency = 3,
                             PlanName = "Basic Residential Plan",
                             SubCategoryId = 1
                         },
                         new
                         {
                             Id = 2,
+                            AgentCommission = 1200m,
                             BaseCoverageAmount = 5000000m,
+                            BasePremium = 15000m,
                             CoverageRate = 0.03m,
+                            Frequency = 1,
                             PlanName = "Basic Commercial Plan",
                             SubCategoryId = 2
                         },
                         new
                         {
                             Id = 3,
+                            AgentCommission = 2000m,
                             BaseCoverageAmount = 10000000m,
+                            BasePremium = 25000m,
                             CoverageRate = 0.04m,
+                            Frequency = 2,
                             PlanName = "Basic Industrial Plan",
                             SubCategoryId = 3
                         },
                         new
                         {
                             Id = 4,
+                            AgentCommission = 200m,
                             BaseCoverageAmount = 300000m,
+                            BasePremium = 2000m,
                             CoverageRate = 0.015m,
+                            Frequency = 3,
                             PlanName = "Basic Contents Plan",
                             SubCategoryId = 4
                         });
@@ -281,6 +427,17 @@ namespace Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Claim", b =>
+                {
+                    b.HasOne("Domain.Entities.PolicyRequest", "PolicyRequest")
+                        .WithMany()
+                        .HasForeignKey("PolicyRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PolicyRequest");
                 });
 
             modelBuilder.Entity("Domain.Entities.PolicyRequest", b =>

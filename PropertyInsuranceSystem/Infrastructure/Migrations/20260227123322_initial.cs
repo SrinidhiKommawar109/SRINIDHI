@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class init1 : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -95,6 +95,8 @@ namespace Infrastructure.Migrations
                     PlanName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BaseCoverageAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CoverageRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BasePremium = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AgentCommission = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     SubCategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -121,7 +123,9 @@ namespace Infrastructure.Migrations
                     PropertyAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PropertyValue = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     PropertyAge = table.Column<int>(type: "int", nullable: true),
-                    RiskScore = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                    RiskScore = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    PremiumAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AgentCommissionAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -145,6 +149,31 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Claims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PolicyRequestId = table.Column<int>(type: "int", nullable: false),
+                    PropertyAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PropertyValue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PropertyAge = table.Column<int>(type: "int", nullable: false),
+                    ClaimAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Claims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Claims_PolicyRequests_PolicyRequestId",
+                        column: x => x.PolicyRequestId,
+                        principalTable: "PolicyRequests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "PropertyCategories",
                 columns: new[] { "Id", "Name" },
@@ -153,7 +182,12 @@ namespace Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Email", "FullName", "IsActive", "PasswordHash", "Role" },
-                values: new object[] { 1, "admin@gmail.com", "Admin", true, "$2a$11$kkF9EKe7KJxAijZ374He4edBGTSujLGRA48MkMwN9g6PK77IM2H..", 1 });
+                values: new object[,]
+                {
+                    { 1, "admin@gmail.com", "Admin", true, "$2a$11$kkF9EKe7KJxAijZ374He4edBGTSujLGRA48MkMwN9g6PK77IM2H..", 1 },
+                    { 2, "claims@gmail.com", "Claims Officer", true, "$2a$11$kkF9EKe7KJxAijZ374He4edBGTSujLGRA48MkMwN9g6PK77IM2H..", 4 },
+                    { 3, "customer@gmail.com", "Customer", true, "$2a$11$kkF9EKe7KJxAijZ374He4edBGTSujLGRA48MkMwN9g6PK77IM2H..", 3 }
+                });
 
             migrationBuilder.InsertData(
                 table: "PropertySubCategories",
@@ -168,14 +202,37 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "PropertyPlans",
-                columns: new[] { "Id", "BaseCoverageAmount", "CoverageRate", "PlanName", "SubCategoryId" },
+                columns: new[] { "Id", "AgentCommission", "BaseCoverageAmount", "BasePremium", "CoverageRate", "PlanName", "SubCategoryId" },
                 values: new object[,]
                 {
-                    { 1, 1000000m, 0.02m, "Basic Residential Plan", 1 },
-                    { 2, 5000000m, 0.03m, "Basic Commercial Plan", 2 },
-                    { 3, 10000000m, 0.04m, "Basic Industrial Plan", 3 },
-                    { 4, 300000m, 0.015m, "Basic Contents Plan", 4 }
+                    { 1, 500m, 1000000m, 5000m, 0.02m, "Basic Residential Plan", 1 },
+                    { 2, 1200m, 5000000m, 15000m, 0.03m, "Basic Commercial Plan", 2 },
+                    { 3, 2000m, 10000000m, 25000m, 0.04m, "Basic Industrial Plan", 3 },
+                    { 4, 200m, 300000m, 2000m, 0.015m, "Basic Contents Plan", 4 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "PolicyRequests",
+                columns: new[] { "Id", "AgentCommissionAmount", "AgentId", "CustomerId", "PlanId", "PremiumAmount", "PropertyAddress", "PropertyAge", "PropertyValue", "RiskScore", "Status" },
+                values: new object[,]
+                {
+                    { 1, 0m, null, 3, 1, 0m, null, null, null, null, 6 },
+                    { 2, 0m, null, 3, 2, 0m, null, null, null, null, 6 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Claims",
+                columns: new[] { "Id", "ClaimAmount", "PolicyRequestId", "PropertyAddress", "PropertyAge", "PropertyValue", "Remarks", "Status" },
+                values: new object[,]
+                {
+                    { 1, 5000m, 1, "123 Main Street", 10, 1000000m, "", 0 },
+                    { 2, 15000m, 2, "456 Commerce Road", 5, 5000000m, "", 0 }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Claims_PolicyRequestId",
+                table: "Claims",
+                column: "PolicyRequestId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PolicyRequests_AgentId",
@@ -218,10 +275,13 @@ namespace Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "PolicyRequests");
+                name: "Claims");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
+
+            migrationBuilder.DropTable(
+                name: "PolicyRequests");
 
             migrationBuilder.DropTable(
                 name: "PropertyPlans");
