@@ -20,9 +20,9 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<PropertyCategory> PropertyCategories { get; set; }
     public DbSet<PropertySubCategory> PropertySubCategories { get; set; }
-    public DbSet<PropertyPlan> PropertyPlans { get; set; }
+    public DbSet<PropertyPlans> PropertyPlans { get; set; }
 
-
+    public DbSet<PolicyRequest> PolicyRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -65,7 +65,7 @@ public class ApplicationDbContext : DbContext
                 PasswordHash = "$2a$11$kkF9EKe7KJxAijZ374He4edBGTSujLGRA48MkMwN9g6PK77IM2H..",
                 Role = UserRole.Admin,
                 IsActive = true,
-                CreatedAt = new DateTime(2024, 1, 1)
+               
             }
         );
 
@@ -75,7 +75,7 @@ public class ApplicationDbContext : DbContext
             {
                 Id = 1,
                 Name = "Property Insurance",
-                CreatedAt = new DateTime(2024, 1, 1)
+                
             }
         );
 
@@ -87,7 +87,7 @@ public class ApplicationDbContext : DbContext
                 Code = "SUB_RES_01",
                 Name = "Residential Property",
                 CategoryId = 1,
-                CreatedAt = new DateTime(2024, 1, 1)
+               
             },
             new PropertySubCategory
             {
@@ -95,7 +95,7 @@ public class ApplicationDbContext : DbContext
                 Code = "SUB_COM_02",
                 Name = "Commercial Property",
                 CategoryId = 1,
-                CreatedAt = new DateTime(2024, 1, 1)
+                
             },
             new PropertySubCategory
             {
@@ -103,7 +103,7 @@ public class ApplicationDbContext : DbContext
                 Code = "SUB_IND_03",
                 Name = "Industrial & Special Use",
                 CategoryId = 1,
-                CreatedAt = new DateTime(2024, 1, 1)
+                
             },
             new PropertySubCategory
             {
@@ -111,47 +111,51 @@ public class ApplicationDbContext : DbContext
                 Code = "SUB_CON_04",
                 Name = "Property Contents",
                 CategoryId = 1,
-                CreatedAt = new DateTime(2024, 1, 1)
+                
             }
         );
 
         // ---- ONE PLAN PER SUBCATEGORY (DEMO) ----
-        modelBuilder.Entity<PropertyPlan>().HasData(
-            new PropertyPlan
+        modelBuilder.Entity<PropertyPlans>().HasData(
+            new PropertyPlans
             {
                 Id = 1,
                 PlanName = "Basic Residential Plan",
                 BaseCoverageAmount = 1000000,
                 CoverageRate = 0.02m,
+                BasePremium = 5000,
+                AgentCommission = 500,
                 SubCategoryId = 1,
-                CreatedAt = new DateTime(2024, 1, 1)
             },
-            new PropertyPlan
+            new PropertyPlans
             {
                 Id = 2,
                 PlanName = "Basic Commercial Plan",
                 BaseCoverageAmount = 5000000,
                 CoverageRate = 0.03m,
+                BasePremium = 15000,
+                AgentCommission = 1200,
                 SubCategoryId = 2,
-                CreatedAt = new DateTime(2024, 1, 1)
             },
-            new PropertyPlan
+            new PropertyPlans
             {
                 Id = 3,
                 PlanName = "Basic Industrial Plan",
                 BaseCoverageAmount = 10000000,
                 CoverageRate = 0.04m,
+                BasePremium = 25000,
+                AgentCommission = 2000,
                 SubCategoryId = 3,
-                CreatedAt = new DateTime(2024, 1, 1)
             },
-            new PropertyPlan
+            new PropertyPlans
             {
                 Id = 4,
                 PlanName = "Basic Contents Plan",
                 BaseCoverageAmount = 300000,
                 CoverageRate = 0.015m,
+                BasePremium = 2000,
+                AgentCommission = 200,
                 SubCategoryId = 4,
-                CreatedAt = new DateTime(2024, 1, 1)
             }
         );
     }

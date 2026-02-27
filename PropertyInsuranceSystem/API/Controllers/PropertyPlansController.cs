@@ -32,13 +32,13 @@ public class PropertyPlansController : ControllerBase
         if (subCategory == null)
             return NotFound("SubCategory not found");
 
-        var plan = new PropertyPlan
+        var plan = new PropertyPlans
         {
             PlanName = dto.PlanName,
             BaseCoverageAmount = dto.BaseCoverageAmount,
             CoverageRate = dto.CoverageRate,
             SubCategoryId = dto.SubCategoryId,
-            CreatedAt = DateTime.UtcNow
+          
         };
 
         _context.PropertyPlans.Add(plan);
@@ -53,6 +53,14 @@ public class PropertyPlansController : ControllerBase
             plan.SubCategoryId
         });
     }
+    // ✅ GET: api/PropertyPlans
+    [HttpGet]
+    public async Task<IActionResult> GetAllPlans()
+    {
+        var plans = await _context.PropertyPlans.ToListAsync();
+        return Ok(plans);
+    }
+
     // ✅ GET: api/PropertyPlans/5
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPlanById(int id)

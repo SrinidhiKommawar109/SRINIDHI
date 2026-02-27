@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260226045704_initial")]
-    partial class initial
+    [Migration("20260227084125_init2")]
+    partial class init2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,9 +33,6 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -47,18 +44,12 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -71,14 +62,55 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@gmail.com",
                             FullName = "Admin",
                             IsActive = true,
-                            IsDeleted = false,
                             PasswordHash = "$2a$11$kkF9EKe7KJxAijZ374He4edBGTSujLGRA48MkMwN9g6PK77IM2H..",
                             Role = 1
                         });
+                });
+
+            modelBuilder.Entity("Domain.Entities.PolicyRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AgentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PropertyAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PropertyAge")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("PropertyValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("RiskScore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgentId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("PolicyRequests");
                 });
 
             modelBuilder.Entity("Domain.Entities.PropertyCategory", b =>
@@ -89,18 +121,9 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -110,13 +133,11 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
                             Name = "Property Insurance"
                         });
                 });
 
-            modelBuilder.Entity("Domain.Entities.PropertyPlan", b =>
+            modelBuilder.Entity("Domain.Entities.PropertyPlans", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -130,21 +151,12 @@ namespace Infrastructure.Migrations
                     b.Property<decimal>("CoverageRate")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("PlanName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SubCategoryId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -158,8 +170,6 @@ namespace Infrastructure.Migrations
                             Id = 1,
                             BaseCoverageAmount = 1000000m,
                             CoverageRate = 0.02m,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
                             PlanName = "Basic Residential Plan",
                             SubCategoryId = 1
                         },
@@ -168,8 +178,6 @@ namespace Infrastructure.Migrations
                             Id = 2,
                             BaseCoverageAmount = 5000000m,
                             CoverageRate = 0.03m,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
                             PlanName = "Basic Commercial Plan",
                             SubCategoryId = 2
                         },
@@ -178,8 +186,6 @@ namespace Infrastructure.Migrations
                             Id = 3,
                             BaseCoverageAmount = 10000000m,
                             CoverageRate = 0.04m,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
                             PlanName = "Basic Industrial Plan",
                             SubCategoryId = 3
                         },
@@ -188,8 +194,6 @@ namespace Infrastructure.Migrations
                             Id = 4,
                             BaseCoverageAmount = 300000m,
                             CoverageRate = 0.015m,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
                             PlanName = "Basic Contents Plan",
                             SubCategoryId = 4
                         });
@@ -210,18 +214,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -235,8 +230,6 @@ namespace Infrastructure.Migrations
                             Id = 1,
                             CategoryId = 1,
                             Code = "SUB_RES_01",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
                             Name = "Residential Property"
                         },
                         new
@@ -244,8 +237,6 @@ namespace Infrastructure.Migrations
                             Id = 2,
                             CategoryId = 1,
                             Code = "SUB_COM_02",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
                             Name = "Commercial Property"
                         },
                         new
@@ -253,8 +244,6 @@ namespace Infrastructure.Migrations
                             Id = 3,
                             CategoryId = 1,
                             Code = "SUB_IND_03",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
                             Name = "Industrial & Special Use"
                         },
                         new
@@ -262,8 +251,6 @@ namespace Infrastructure.Migrations
                             Id = 4,
                             CategoryId = 1,
                             Code = "SUB_CON_04",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
                             Name = "Property Contents"
                         });
                 });
@@ -276,14 +263,8 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("Expires")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsRevoked")
                         .HasColumnType("bit");
@@ -291,9 +272,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -305,7 +283,32 @@ namespace Infrastructure.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("Domain.Entities.PropertyPlan", b =>
+            modelBuilder.Entity("Domain.Entities.PolicyRequest", b =>
+                {
+                    b.HasOne("Domain.Entities.ApplicationUser", "Agent")
+                        .WithMany()
+                        .HasForeignKey("AgentId");
+
+                    b.HasOne("Domain.Entities.ApplicationUser", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.PropertyPlans", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Agent");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PropertyPlans", b =>
                 {
                     b.HasOne("Domain.Entities.PropertySubCategory", "SubCategory")
                         .WithMany("Plans")

@@ -15,6 +15,6 @@ namespace Domain.Entities
 
         public PropertyCategory Category { get; set; }
 
-        public ICollection<PropertyPlan> Plans { get; set; }
+        public ICollection<PropertyPlans> Plans { get; set; }
     }
 }

@@ -1,0 +1,31 @@
+﻿using Domain.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Domain.Enums;
+namespace Domain.Entities
+{
+    public class PolicyRequest : BaseEntity
+    {
+        public int PlanId { get; set; }
+        public PropertyPlans Plan { get; set; }
+
+        public int CustomerId { get; set; }
+        public ApplicationUser Customer { get; set; }
+
+        public int? AgentId { get; set; }
+        public ApplicationUser Agent { get; set; }
+
+        public PolicyRequestStatus Status { get; set; }
+        public string? PropertyAddress { get; set; }
+        public decimal? PropertyValue { get; set; }
+        public int? PropertyAge { get; set; }
+        public decimal? RiskScore { get; set; }
+
+        public decimal PremiumAmount { get; set; }
+
+        public decimal AgentCommissionAmount { get; set; }
+    }
+}

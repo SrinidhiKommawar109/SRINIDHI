@@ -4,6 +4,7 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260227084019_init1")]
+    partial class init1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,9 +78,6 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("AgentCommissionAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int?>("AgentId")
                         .HasColumnType("int");
 
@@ -86,9 +86,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("PremiumAmount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PropertyAddress")
                         .HasColumnType("nvarchar(max)");
@@ -148,13 +145,7 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("AgentCommission")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<decimal>("BaseCoverageAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("BasePremium")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("CoverageRate")
@@ -177,9 +168,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            AgentCommission = 500m,
                             BaseCoverageAmount = 1000000m,
-                            BasePremium = 5000m,
                             CoverageRate = 0.02m,
                             PlanName = "Basic Residential Plan",
                             SubCategoryId = 1
@@ -187,9 +176,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 2,
-                            AgentCommission = 1200m,
                             BaseCoverageAmount = 5000000m,
-                            BasePremium = 15000m,
                             CoverageRate = 0.03m,
                             PlanName = "Basic Commercial Plan",
                             SubCategoryId = 2
@@ -197,9 +184,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 3,
-                            AgentCommission = 2000m,
                             BaseCoverageAmount = 10000000m,
-                            BasePremium = 25000m,
                             CoverageRate = 0.04m,
                             PlanName = "Basic Industrial Plan",
                             SubCategoryId = 3
@@ -207,9 +192,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 4,
-                            AgentCommission = 200m,
                             BaseCoverageAmount = 300000m,
-                            BasePremium = 2000m,
                             CoverageRate = 0.015m,
                             PlanName = "Basic Contents Plan",
                             SubCategoryId = 4

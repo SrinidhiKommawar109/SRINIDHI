@@ -48,8 +48,7 @@ public class CategoryService : ICategoryService
             Code = dto.Code,
             Name = dto.Name,
             CategoryId = dto.CategoryId,
-            CreatedAt = DateTime.UtcNow
-        };
+           };
 
         _context.PropertySubCategories.Add(subCategory);
         await _context.SaveChangesAsync();
@@ -57,13 +56,13 @@ public class CategoryService : ICategoryService
 
     public async Task AddPlanAsync(CreatePlanDto dto)
     {
-        var plan = new PropertyPlan
+        var plan = new PropertyPlans
         {
             PlanName = dto.PlanName,
             BaseCoverageAmount = dto.BaseCoverageAmount,
             CoverageRate = dto.CoverageRate,
             SubCategoryId = dto.SubCategoryId,
-            CreatedAt = DateTime.UtcNow
+            
         };
 
         _context.PropertyPlans.Add(plan);
