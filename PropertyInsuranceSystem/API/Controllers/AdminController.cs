@@ -4,7 +4,8 @@ using Infrastructure.Persistence;
 using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
+using Domain.Entities;
 
 namespace API.Controllers;
 
@@ -46,8 +47,9 @@ public class AdminController : ControllerBase
 
     [Authorize(Roles = "Customer")]
     [HttpGet("customer-area")]
-    public IActionResult CustomerArea()
+    public async Task<IActionResult> CustomerArea()
     {
-        return Ok("Welcome Customer");
+        var plans = await _context.PropertyPlans.ToListAsync();
+        return Ok(plans);
     }
 }

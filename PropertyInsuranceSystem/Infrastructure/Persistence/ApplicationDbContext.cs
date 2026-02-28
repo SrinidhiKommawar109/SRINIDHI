@@ -25,10 +25,16 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Claim> Claims { get; set; }
 
+    public DbSet<Invoice> Invoices { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Invoice>()
+        .HasOne(i => i.Customer)
+        .WithMany()
+        .HasForeignKey(i => i.CustomerId)
+        .OnDelete(DeleteBehavior.Restrict);
         // ========================
         // RELATIONSHIPS
         // ========================

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Persistence;
@@ -65,7 +65,9 @@ namespace API.Controllers
             var requests = await _context.PolicyRequests
                 .Include(r => r.Plan)
                 .Include(r => r.Customer)
-                .Where(r => r.Status == PolicyRequestStatus.PendingAdmin)
+                .Where(r =>
+                    r.Status == PolicyRequestStatus.PendingAdmin ||
+                    r.Status == PolicyRequestStatus.CustomerConfirmed)
                 .ToListAsync();
 
             return Ok(requests);
@@ -258,6 +260,48 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
 
             return Ok("Policy officially approved.");
+        }
+
+        // =====================================================
+        // 9️⃣ CUSTOMER - VIEW MY REQUESTS
+        // =====================================================
+        [HttpGet("customer/my-requests")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> GetMyRequests()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized("User ID not found in token.");
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var requests = await _context.PolicyRequests
+                .Include(r => r.Plan)
+                .Where(r => r.CustomerId == userId)
+                .ToListAsync();
+
+            return Ok(requests);
+        }
+
+        // =====================================================
+        // 🔟 AGENT - VIEW APPROVED REQUESTS (COMMISSION EARNED)
+        // =====================================================
+        [HttpGet("agent/approved")]
+        [Authorize(Roles = "Agent")]
+        public async Task<IActionResult> GetApprovedForAgent()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized("User ID not found in token.");
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var requests = await _context.PolicyRequests
+                .Include(r => r.Plan)
+                .Where(r => r.AgentId == userId && r.Status == PolicyRequestStatus.PolicyApproved)
+                .ToListAsync();
+
+            return Ok(requests);
         }
     }
 }

@@ -89,6 +89,25 @@ namespace API.Controllers
             if (dto.IsAccepted)
             {
                 claim.Status = ClaimStatus.Approved;
+                var policy = await _context.PolicyRequests
+    .Include(p => p.Plan)
+    .FirstOrDefaultAsync(p => p.Id == claim.PolicyRequestId);
+
+                var invoice = new Invoice
+                {
+                    PolicyRequestId = policy.Id,
+                    InvoiceNumber = "INV-" + Guid.NewGuid().ToString().Substring(0, 8),
+                    GeneratedDate = DateTime.UtcNow,
+                    TotalPremium = policy.TotalPremium,
+                    InstallmentAmount = policy.InstallmentAmount,
+                    InstallmentCount = policy.InstallmentCount,
+                    ClaimAmount = claim.ClaimAmount,
+                    PlanName = policy.Plan.PlanName,
+                    CustomerId = policy.CustomerId
+                };
+
+                _context.Invoices.Add(invoice);
+                await _context.SaveChangesAsync();
                 claim.Remarks = dto.Remarks ?? "Claim accepted";
                 await _context.SaveChangesAsync();
                 return Ok("Insurance has been claimed ✅");
