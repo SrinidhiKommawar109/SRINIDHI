@@ -68,6 +68,8 @@
             <table class="w-full text-left text-xs">
                 <thead>
                     <tr class="bg-slate-50 dark:bg-slate-800/50">
+                        <th class="px-6 py-3 font-semibold text-slate-900 dark:text-white uppercase tracking-wider">ID
+                        </th>
                         <th class="px-6 py-3 font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Name
                         </th>
                         <th class="px-6 py-3 font-semibold text-slate-900 dark:text-white uppercase tracking-wider">
@@ -78,6 +80,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                     <tr *ngFor="let s of staff" class="hover:bg-slate-50 transition-colors dark:hover:bg-slate-800/50">
+                        <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">{{ s.id }}</td>
                         <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">{{ s.fullName }}</td>
                         <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ s.email }}</td>
                         <td class="px-6 py-4">

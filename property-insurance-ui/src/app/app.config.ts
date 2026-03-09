@@ -6,6 +6,7 @@ import { GlobalErrorHandler } from './core/global-error-handler';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth.interceptor';
+import { errorInterceptor } from './core/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,7 +18,7 @@ export const appConfig: ApplicationConfig = {
         scrollPositionRestoration: 'enabled',
       }),
     ),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     { provide: ErrorHandler, useClass: GlobalErrorHandler }
   ]
 };

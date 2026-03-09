@@ -49,6 +49,8 @@
                             <th class="px-6 py-3 font-semibold text-slate-900 dark:text-slate-100">Request</th>
                             <th class="px-6 py-3 font-semibold text-slate-900 dark:text-slate-100">Customer</th>
                             <th class="px-6 py-3 font-semibold text-slate-900 dark:text-slate-100">Admin Notes</th>
+                            <th class="px-6 py-3 font-semibold text-slate-900 dark:text-slate-100 text-center">Risk
+                                Score</th>
                             <th class="px-6 py-3 font-semibold text-slate-900 dark:text-slate-100">Status</th>
                             <th class="px-6 py-3 font-semibold text-slate-900 dark:text-slate-100 text-right">
                                 Actions</th>
@@ -69,6 +71,14 @@
                                 <p class="text-[10px] text-slate-500 italic max-w-xs truncate" [title]="req.adminNotes">
                                     {{ req.adminNotes || 'No notes provided' }}
                                 </p>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span *ngIf="req.riskScore !== undefined"
+                                    class="font-bold text-sky-600 dark:text-sky-400">
+                                    {{ req.riskScore }}
+                                </span>
+                                <span *ngIf="req.riskScore === undefined"
+                                    class="text-slate-300 dark:text-slate-700">--</span>
                             </td>
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
@@ -92,10 +102,23 @@
                                         class="rounded bg-sky-600 px-3 py-1 text-[10px] font-bold text-white hover:bg-sky-500">
                                         Send Form
                                     </button>
-                                    <button *ngIf="req.status === 'FormSubmitted'" (click)="calculateRisk(req.id)"
+                                    <button *ngIf="req.status === 'FormSubmitted' && calculatingRequestId !== req.id"
+                                        (click)="calculateRisk(req.id)"
                                         class="rounded bg-emerald-600 px-3 py-1 text-[10px] font-bold text-white hover:bg-emerald-500">
                                         Calculate Risk
                                     </button>
+                                    <div *ngIf="calculatingRequestId === req.id"
+                                        class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                                        <svg class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                            viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        <span class="text-[10px] font-bold">Calculating...</span>
+                                    </div>
                                     <span *ngIf="req.status === 'RiskCalculated'"
                                         class="text-[10px] text-slate-400 font-medium">Awaiting Customer</span>
                                     <span *ngIf="req.status === 'FormSent'"

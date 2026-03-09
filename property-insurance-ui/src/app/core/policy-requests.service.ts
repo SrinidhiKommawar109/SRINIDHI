@@ -35,6 +35,15 @@ export interface PolicyRequest {
   plan?: {
     planName: string;
   } | null;
+
+  claimsOfficerId?: number;
+  claimsOfficerName?: string;
+  claimId?: number;
+  claimStatus?: string;
+
+  customerName?: string;
+  planName?: string;
+  agentName?: string;
 }
 
 export interface SubmitPropertyPayload {
@@ -64,8 +73,12 @@ export class PolicyRequestsService {
   private readonly baseUrl = `${environment.apiBaseUrl}/PolicyRequests`;
   private readonly plansUrl = `${environment.apiBaseUrl}/PropertyPlans`;
 
-  getAllPlans(): Observable<PropertyPlan[]> {
-    return this.http.get<PropertyPlan[]>(this.plansUrl);
+  getAllPlans(subCategoryId?: number): Observable<PropertyPlan[]> {
+    let url = this.plansUrl;
+    if (subCategoryId) {
+      url += `?subCategoryId=${subCategoryId}`;
+    }
+    return this.http.get<PropertyPlan[]>(url);
   }
 
   createRequest(planId: number): Observable<string> {
@@ -147,6 +160,10 @@ export class PolicyRequestsService {
     return this.http.get<PolicyRequest[]>(
       this.baseUrl + '/agent/assigned',
     );
+  }
+
+  getAdminAllRequests(): Observable<PolicyRequest[]> {
+    return this.http.get<PolicyRequest[]>(`${this.baseUrl}/admin/all`);
   }
 }
 

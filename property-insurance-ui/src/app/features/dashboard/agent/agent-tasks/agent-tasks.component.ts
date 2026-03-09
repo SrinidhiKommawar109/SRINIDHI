@@ -19,6 +19,7 @@ export class AgentTasksComponent implements OnInit {
     lastRisk: CalculateRiskResponse | null = null;
     selectedRequestDetails: PolicyRequest | null = null;
     errorMessage = '';
+    calculatingRequestId: number | null = null;
 
     ngOnInit(): void {
         this.loadAssignedRequests();
@@ -66,21 +67,30 @@ export class AgentTasksComponent implements OnInit {
             return;
         }
         this.errorMessage = '';
-        this.policies.calculateRisk(requestId).subscribe({
-            next: (res) => {
-                this.lastRisk = res;
-                this.notifications.show({
-                    title: 'Risk calculated',
-                    message: 'Premium and commission calculated.',
-                    type: 'success',
-                });
-                this.cdr.detectChanges();
-            },
-            error: (err) => {
-                this.errorMessage = this.extractError(err);
-                this.cdr.detectChanges();
-            },
-        });
+        this.calculatingRequestId = requestId;
+        this.cdr.detectChanges();
+
+        // Simulate "calculation work"
+        setTimeout(() => {
+            this.policies.calculateRisk(requestId).subscribe({
+                next: (res) => {
+                    this.lastRisk = res;
+                    this.calculatingRequestId = null;
+                    this.notifications.show({
+                        title: 'Risk calculated',
+                        message: 'Premium and commission calculated.',
+                        type: 'success',
+                    });
+                    this.loadAssignedRequests(); // Refresh table to show score
+                    this.cdr.detectChanges();
+                },
+                error: (err) => {
+                    this.calculatingRequestId = null;
+                    this.errorMessage = this.extractError(err);
+                    this.cdr.detectChanges();
+                },
+            });
+        }, 2500);
     }
 
     viewDetails(req: PolicyRequest): void {

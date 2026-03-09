@@ -1,0 +1,101 @@
+<div class="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-xl font-bold text-slate-900 dark:text-white">Policy Management</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Consolidated view of all policy requests and claims.
+            </p>
+        </div>
+        <button (click)="loadAllRequests()" [disabled]="loading"
+            class="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-slate-900 shadow-sm border border-slate-200 hover:bg-slate-50 disabled:opacity-50 dark:bg-slate-900 dark:text-white dark:border-slate-800">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                [class.animate-spin]="loading">
+                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                <path d="M16 16h5v5" />
+            </svg>
+            Refresh
+        </button>
+    </div>
+
+    <!-- Stats Overview (Simplified) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Total Policies</p>
+            <p class="text-xl font-bold text-slate-900 dark:text-white">{{ allRequests.length }}</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Active Claims</p>
+            <p class="text-xl font-bold text-rose-600 dark:text-rose-400">{{ (allRequests |
+                json).split('"claimId"').length - 1 }}</p>
+        </div>
+
+    </div>
+
+    <!-- Data Table -->
+    <div
+        class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/50">
+                    <tr>
+                        <th class="px-6 py-4 font-semibold text-slate-900 dark:text-slate-100">Request ID</th>
+                        <th class="px-6 py-4 font-semibold text-slate-900 dark:text-slate-100">Customer</th>
+                        <th class="px-6 py-4 font-semibold text-slate-900 dark:text-slate-100">Policy Requested</th>
+                        <th class="px-6 py-4 font-semibold text-slate-900 dark:text-slate-100">Agent ID</th>
+                        <th class="px-6 py-4 font-semibold text-slate-900 dark:text-slate-100">Policy Status</th>
+                        <th class="px-6 py-4 font-semibold text-slate-900 dark:text-slate-100">Claims Officer</th>
+                        <th class="px-6 py-4 font-semibold text-slate-900 dark:text-slate-100">Claim Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <tr *ngFor="let req of allRequests"
+                        class="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
+                        <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">#{{ req.id }}</td>
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-slate-900 dark:text-white">{{ req.customerName }}</div>
+                            <div class="text-[10px] text-slate-500">ID: {{ req.customerId }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-slate-900 dark:text-white">{{ req.planName }}</div>
+                            <div class="text-[10px] text-slate-500">Value: ₹{{ req.propertyValue | number }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-[10px] text-slate-500">ID: {{ req.agentId }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
+                                [ngClass]="getStatusClass(req.status)">
+                                {{ req.status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div *ngIf="req.claimsOfficerId" class="space-y-0.5">
+                                <div class="font-medium text-slate-900 dark:text-white">{{ req.claimsOfficerName }}
+                                </div>
+                                <div class="text-[10px] text-slate-500">Officer ID: {{ req.claimsOfficerId }}</div>
+                            </div>
+                            <div *ngIf="!req.claimsOfficerId && req.claimId" class="text-amber-500 italic">Assigning...
+                            </div>
+                            <div *ngIf="!req.claimId" class="text-slate-400">N/A</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span *ngIf="req.claimId"
+                                class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
+                                [ngClass]="getClaimStatusClass(req.claimStatus)">
+                                {{ req.claimStatus }}
+                            </span>
+                            <span *ngIf="!req.claimId" class="text-slate-400">No Claim</span>
+                        </td>
+                    </tr>
+                    <tr *ngIf="allRequests.length === 0 && !loading">
+                        <td colspan="6" class="px-6 py-12 text-center text-slate-500 italic">
+                            No policies found in the system.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

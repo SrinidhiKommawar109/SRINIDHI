@@ -50,7 +50,23 @@ export class CustomerRequestsComponent implements OnInit {
     }
 
     submitProperty(): void {
-        if (!this.submitRequestId) return;
+        if (!this.submitRequestId) {
+            this.submitMessage = 'Please enter a valid Request ID.';
+            return;
+        }
+        if (!this.submitPayload.propertyAddress.trim()) {
+            this.submitMessage = 'Property address is required.';
+            return;
+        }
+        if (this.submitPayload.propertyValue <= 0) {
+            this.submitMessage = 'Property value must be greater than zero.';
+            return;
+        }
+        if (this.submitPayload.propertyAge < 0) {
+            this.submitMessage = 'Property age cannot be negative.';
+            return;
+        }
+
         this.submitMessage = '';
         this.policies.submitProperty(this.submitRequestId, this.submitPayload).subscribe({
             next: (msg) => {
@@ -65,14 +81,41 @@ export class CustomerRequestsComponent implements OnInit {
         });
     }
 
+    // Payment form local state
+    paymentInfo = { cardNumber: '', expiry: '', cvv: '' };
+    paymentError = '';
+
     initiateCheckout(): void {
         if (!this.buyRequestId) return;
+        this.paymentError = '';
         this.showPaymentForm = true;
+    }
+
+    canProceedToPayment(): boolean {
+        if (!this.buyRequestId) return false;
+        const req = this.myRequests.find(r => r.id === this.buyRequestId);
+        return req?.status === 'RiskCalculated';
     }
 
     confirmPurchase(): void {
         if (!this.buyRequestId) return;
+
+        // Basic Payment Validation
+        if (this.paymentInfo.cardNumber.replace(/\D/g, '').length < 16) {
+            this.paymentError = 'Invalid card number.';
+            return;
+        }
+        if (!/^\d{2}\/\d{2}$/.test(this.paymentInfo.expiry)) {
+            this.paymentError = 'Invalid expiry (MM/YY).';
+            return;
+        }
+        if (this.paymentInfo.cvv.length < 3) {
+            this.paymentError = 'Invalid CVV.';
+            return;
+        }
+
         this.buyMessage = '';
+        this.paymentError = '';
         this.policies.buyPolicy(this.buyRequestId).subscribe({
             next: (msg) => {
                 this.buyMessage = msg;

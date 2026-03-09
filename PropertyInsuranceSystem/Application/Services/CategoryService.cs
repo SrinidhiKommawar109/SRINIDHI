@@ -1,37 +1,39 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
 public class CategoryService : ICategoryService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IRepository<PropertySubCategory> _subCategoryRepository;
+    private readonly IRepository<PropertyPlans> _plansRepository;
 
-    public CategoryService(ApplicationDbContext context)
+    public CategoryService(
+        ICategoryRepository categoryRepository,
+        IRepository<PropertySubCategory> subCategoryRepository,
+        IRepository<PropertyPlans> plansRepository)
     {
-        _context = context;
+        _categoryRepository = categoryRepository;
+        _subCategoryRepository = subCategoryRepository;
+        _plansRepository = plansRepository;
     }
 
     public async Task<List<CategoryResponseDto>> GetAllCategoriesAsync()
     {
-        var categories = await _context.PropertyCategories
-            .Include(c => c.SubCategories)
-                .ThenInclude(s => s.Plans)
-            .ToListAsync();
+        var categories = await _categoryRepository.GetAllWithSubCategoriesAndPlansAsync();
 
         return categories.Select(c => new CategoryResponseDto
         {
             Id = c.Id,
             Name = c.Name,
-            SubCategories = c.SubCategories.Select(s => new SubCategoryResponseDto
+            SubCategories = (c.SubCategories ?? []).Select(s => new SubCategoryResponseDto
             {
                 Id = s.Id,
                 Code = s.Code,
                 Name = s.Name,
-                Plans = s.Plans.Select(p => new PlanResponseDto
+                Plans = (s.Plans ?? []).Select(p => new PlanResponseDto
                 {
                     Id = p.Id,
                     PlanName = p.PlanName,
@@ -53,8 +55,8 @@ public class CategoryService : ICategoryService
             CategoryId = dto.CategoryId,
            };
 
-        _context.PropertySubCategories.Add(subCategory);
-        await _context.SaveChangesAsync();
+        await _subCategoryRepository.AddAsync(subCategory);
+        await _subCategoryRepository.SaveChangesAsync();
     }
 
     public async Task AddPlanAsync(CreatePlanDto dto)
@@ -70,8 +72,8 @@ public class CategoryService : ICategoryService
             SubCategoryId = dto.SubCategoryId,
         };
 
-        _context.PropertyPlans.Add(plan);
-        await _context.SaveChangesAsync();
+        await _plansRepository.AddAsync(plan);
+        await _plansRepository.SaveChangesAsync();
     }
 
 }

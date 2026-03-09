@@ -1,38 +1,24 @@
-﻿using Application.DTOs;
-using Application.Interfaces;
-using BCrypt.Net;
-using Domain.Entities;
-using Domain.Enums;
-using Infrastructure.Persistence;
-using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using Infrastructure.Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly ApplicationDbContext _context;
-    private readonly JwtTokenGenerator _tokenGenerator;
+    private readonly IJwtTokenGenerator _tokenGenerator;
+    private readonly IRepository<ApplicationUser> _userRepository;
 
-    public AuthService(ApplicationDbContext context, JwtTokenGenerator tokenGenerator)
+    public AuthService(IRepository<ApplicationUser> userRepository, IJwtTokenGenerator tokenGenerator)
     {
-        _context = context;
+        _userRepository = userRepository;
         _tokenGenerator = tokenGenerator;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
     {
-        if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+        if (await _userRepository.AnyAsync(u => u.Email == request.Email))
             throw new Exception("User already exists");
 
         // Only Customer can self register
@@ -47,8 +33,8 @@ public class AuthService : IAuthService
             Role = UserRole.Customer
         };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        await _userRepository.AddAsync(user);
+        await _userRepository.SaveChangesAsync();
 
         // Generate ReferralCode: REF-ID-Name
         user.ReferralCode = $"REF-{user.Id}-{user.FullName.Replace(" ", "").ToUpper()}";
@@ -56,8 +42,7 @@ public class AuthService : IAuthService
         // Reward the Referrer if applicable
         if (!string.IsNullOrEmpty(request.ReferralCode))
         {
-            var referrer = await _context.Users
-                .FirstOrDefaultAsync(u => u.ReferralCode == request.ReferralCode);
+            var referrer = await _userRepository.FirstOrDefaultAsync(u => u.ReferralCode == request.ReferralCode);
             
             if (referrer != null)
             {
@@ -66,7 +51,7 @@ public class AuthService : IAuthService
             }
         }
 
-        await _context.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync();
 
         var token = _tokenGenerator.GenerateToken(user);
 
@@ -82,8 +67,7 @@ public class AuthService : IAuthService
     }
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == request.Email);
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.Email == request.Email);
 
         if (user == null)
             throw new Exception("Invalid credentials");
@@ -97,7 +81,7 @@ public class AuthService : IAuthService
         if (string.IsNullOrEmpty(user.ReferralCode))
         {
             user.ReferralCode = $"REF-{user.Id}-{user.FullName.Replace(" ", "").ToUpper()}";
-            await _context.SaveChangesAsync();
+            await _userRepository.SaveChangesAsync();
         }
 
         var token = _tokenGenerator.GenerateToken(user);
@@ -114,7 +98,7 @@ public class AuthService : IAuthService
     }
     public async Task CreateUserByAdminAsync(RegisterRequestDto request)
     {
-        if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+        if (await _userRepository.AnyAsync(u => u.Email == request.Email))
             throw new Exception("User already exists");
 
         if (request.Role == "Customer")
@@ -130,18 +114,17 @@ public class AuthService : IAuthService
             Role = role
         };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        await _userRepository.AddAsync(user);
+        await _userRepository.SaveChangesAsync();
 
         // Generate ReferralCode: REF-ID-Name
         user.ReferralCode = $"REF-{user.Id}-{user.FullName.Replace(" ", "").ToUpper()}";
-        await _context.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync();
     }
 
     public async Task RedeemAsync(RedeemRequestDto request)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == request.Email);
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.Email == request.Email);
 
         if (user == null)
             throw new Exception("User not found");
@@ -150,6 +133,6 @@ public class AuthService : IAuthService
             throw new Exception("Insufficient referral balance");
 
         user.ReferralBalance -= request.Amount;
-        await _context.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync();
     }
 }
